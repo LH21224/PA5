@@ -1,6 +1,3 @@
-//
-// The following include files must come first.
-
 #ifndef COOL_TREE_HANDCODE_H
 #define COOL_TREE_HANDCODE_H
 
@@ -8,15 +5,17 @@
 #include "tree.h"
 #include "cool.h"
 #include "stringtab.h"
+
 #define yylineno curr_lineno;
 extern int yylineno;
 
 class Environment;
 
-inline Boolean copy_Boolean(Boolean b) {return b; }
+inline Boolean copy_Boolean(Boolean b) { return b; }
 inline void assert_Boolean(Boolean) {}
-inline void dump_Boolean(ostream& stream, int padding, Boolean b)
-	{ stream << pad(padding) << (int) b << "\n"; }
+inline void dump_Boolean(ostream& stream, int padding, Boolean b) { 
+    stream << pad(padding) << (int) b << "\n"; 
+}
 
 void dump_Symbol(ostream& stream, int padding, Symbol b);
 void assert_Symbol(Symbol b);
@@ -47,65 +46,59 @@ typedef list_node<Case> Cases_class;
 typedef Cases_class *Cases;
 
 #define Program_EXTRAS                          \
-virtual void cgen(ostream&) = 0;		\
+virtual Program copy_Program() = 0;             \
 virtual void dump_with_types(ostream&, int) = 0; 
 
-
-
 #define program_EXTRAS                          \
-void cgen(ostream&);     			\
+Program copy_Program();                         \
 void dump_with_types(ostream&, int);            
 
-#define Class__EXTRAS                   \
-virtual Symbol get_name() = 0;  	\
-virtual Symbol get_parent() = 0;    	\
-virtual Symbol get_filename() = 0;      \
-virtual void dump_with_types(ostream&,int) = 0; 
+#define Class__EXTRAS                           \
+virtual Class_ copy_Class_() = 0;               \
+virtual Symbol get_name() = 0;                  \
+virtual Symbol get_parent() = 0;                \
+virtual Symbol get_filename() = 0;              \
+virtual void dump_with_types(ostream&, int) = 0; 
 
+#define class__EXTRAS                           \
+Symbol get_name()   { return name; }            \
+Symbol get_parent() { return parent; }          \
+Symbol get_filename() { return filename; }      \
+void dump_with_types(ostream&, int);            \
+Class_ copy_Class_();
 
-#define class__EXTRAS                                  \
-Symbol get_name()   { return name; }		       \
-Symbol get_parent() { return parent; }     	       \
-Symbol get_filename() { return filename; }             \
-void dump_with_types(ostream&,int);                    
+#define Feature_EXTRAS                          \
+virtual void dump_with_types(ostream&, int) = 0; 
 
+#define Feature_SHARED_EXTRAS                   \
+void dump_with_types(ostream&, int);            
 
-#define Feature_EXTRAS                                        \
-virtual void dump_with_types(ostream&,int) = 0; 
-
-
-#define Feature_SHARED_EXTRAS                                       \
-void dump_with_types(ostream&,int);    
-
-
-#define Formal_EXTRAS                              \
-virtual void dump_with_types(ostream&,int) = 0;
-
+#define Formal_EXTRAS                           \
+virtual void dump_with_types(ostream&, int) = 0; 
 
 #define formal_EXTRAS                           \
-void dump_with_types(ostream&,int);
-
+void dump_with_types(ostream&, int);            \
+Formal copy_Formal();
 
 #define Case_EXTRAS                             \
-virtual void dump_with_types(ostream& ,int) = 0;
+virtual void dump_with_types(ostream&, int) = 0; 
 
+#define branch_EXTRAS                           \
+void dump_with_types(ostream&, int);            \
+Case copy_Case();
 
-#define branch_EXTRAS                                   \
-void dump_with_types(ostream& ,int);
-
-
-#define Expression_EXTRAS                    \
-Symbol type;                                 \
-Symbol get_type() { return type; }           \
+#define Expression_EXTRAS                       \
+Symbol type;                                    \
+Symbol get_type() { return type; }              \
 Expression set_type(Symbol s) { type = s; return this; } \
-virtual void code(ostream&, Environment) = 0; \
-virtual void dump_with_types(ostream&,int) = 0;  \
-void dump_type(ostream&, int);               \
+virtual void code(ostream&, Environment) = 0;   \
+virtual void dump_with_types(ostream&, int) = 0; \
+void dump_type(ostream&, int);                  \
 Expression_class() { type = (Symbol) NULL; }
 
-#define Expression_SHARED_EXTRAS           \
-void code(ostream&, Environment); 			   \
-void dump_with_types(ostream&,int); 
-
+#define Expression_SHARED_EXTRAS                \
+void code(ostream&, Environment);               \
+void dump_with_types(ostream&, int);            \
+Expression copy_Expression();
 
 #endif

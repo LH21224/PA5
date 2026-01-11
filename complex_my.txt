@@ -1,0 +1,32 @@
+SPIM Version 6.5 of January 4, 2003
+Copyright 1990-2003 by James R. Larus (larus@cs.wisc.edu).
+All Rights Reserved.
+See the file README for a full copyright notice.
+Loaded: ../lib/trap.handler
+--- COOL Comprehensive Syntax Test Start ---
+
+1. Testing Class, Let, Dispatch, and Overriding...
+Shape<A Circle Object> at (10, 20)
+  - My dynamic type is: Circle
+  - My static type (as Shape) is: A Circle Object
+
+2. Testing While loop, If-Else, and Arithmetic...
+  - Factorial of 5 is: 120
+  - Factorial test PASSED.
+
+3. Testing Case expression...
+  - Analyzing an object's type: It is a Shape (but not a Circle).
+  - Analyzing an object's type: It is a Circle.
+  - Analyzing an object's type: It is the Main object.
+
+4. Testing 'isvoid' and 'not' operators...
+  - 'void_object' is void, as expected.
+  - 'self' is not void, as expected.
+
+5. Testing other expressions (blocks, negation)...
+  - This is inside a block expression.
+  - Block evaluated to: 100
+  - Negative of 10 is: -10
+
+--- Test End ---
+COOL program successfully executed
