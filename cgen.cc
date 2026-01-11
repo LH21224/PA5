@@ -1,25 +1,4 @@
-//**************************************************************
-//
-// Code generator SKELETON
-//
-// Read the comments carefully. Make sure to
-//    initialize the base class tags in
-//       `CgenClassTable::CgenClassTable'
-//
-//    Add the label for the dispatch tables to
-//       `IntEntry::code_def'
-//       `StringEntry::code_def'
-//       `BoolConst::code_def'
-//
-//    Add code to emit everyting else that is needed
-//       in `CgenClassTable::code'
-//
-//
-// The files as provided will produce code to begin the code
-// segments, declare globals, and emit constants.  You must
-// fill in the rest.
-//
-//**************************************************************
+
 
 #include <string>
 #include <vector>
@@ -37,21 +16,7 @@ extern int cgen_debug;
 int labelnum = 0;
 CgenClassTable* codegen_classtable = nullptr;
 
-//
-// Three symbols from the semantic analyzer (semant.cc) are used.
-// If e : No_type, then no code is generated for e.
-// Special code is generated for new SELF_TYPE.
-// The name "self" also generates code different from other references.
-//
-//////////////////////////////////////////////////////////////////////
-//
-// Symbols
-//
-// For convenience, a large number of symbols are predefined here.
-// These symbols include the primitive type and method names, as well
-// as fixed names used by the runtime system.
-//
-//////////////////////////////////////////////////////////////////////
+
 Symbol
     arg,
     arg2,
@@ -124,19 +89,6 @@ static char* gc_collect_names[] =
 BoolConst falsebool(FALSE);
 BoolConst truebool(TRUE);
 
-//*********************************************************
-//
-// Define method for code generation
-//
-// This is the method called by the compiler driver
-// `cgtest.cc'. cgen takes an `ostream' to which the assembly will be
-// emmitted, and it passes this and the class list of the
-// code generator tree to the constructor for `CgenClassTable'.
-// That constructor performs all of the work of the code
-// generator.
-//
-//*********************************************************
-
 void program_class::cgen(ostream& os) {
     // spim wants comments to start with '#'
     os << "# start of generated code\n";
@@ -149,19 +101,6 @@ void program_class::cgen(ostream& os) {
 }
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-//  emit_* procedures
-//
-//  emit_X  writes code for operation "X" to the output stream.
-//  There is an emit_X for each opcode X, as well as emit_ functions
-//  for generating names according to the naming conventions (see emit.h)
-//  and calls to support functions defined in the trap handler.
-//
-//  Register names and addresses are passed as strings.  See `emit.h'
-//  for symbolic names you can use to refer to the strings.
-//
-//////////////////////////////////////////////////////////////////////////////
 
 static void emit_load(const char* dest_reg, int offset, const char* source_reg, ostream& s) {
     s << LW << dest_reg << " " << offset* WORD_SIZE << "(" << source_reg << ")"
@@ -371,38 +310,10 @@ static void emit_gc_check(char* source, ostream& s) {
 }
 
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// coding strings, ints, and booleans
-//
-// Cool has three kinds of constants: strings, ints, and booleans.
-// This section defines code generation for each type.
-//
-// All string constants are listed in the global "stringtable" and have
-// type StringEntry.  StringEntry methods are defined both for String
-// constant definitions and references.
-//
-// All integer constants are listed in the global "inttable" and have
-// type IntEntry.  IntEntry methods are defined for Int
-// constant definitions and references.
-//
-// Since there are only two Bool values, there is no need for a table.
-// The two booleans are represented by instances of the class BoolConst,
-// which defines the definition and reference methods for Bools.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-//
-// Strings
-//
 void StringEntry::code_ref(ostream& s) {
     s << STRCONST_PREFIX << index;
 }
 
-//
-// Emit code for a constant String.
-// You should fill in the code naming the dispatch table.
-//
 
 void StringEntry::code_def(ostream& s, int stringclasstag) {
     IntEntryP lensym = inttable.add_int(len);
@@ -461,7 +372,7 @@ void IntEntry::code_def(ostream& s, int intclasstag) {
       << WORD << (DEFAULT_OBJFIELDS + INT_SLOTS) << endl  // object size
       << WORD;
 
-    /***** Add dispatch information for class Int ******/
+
     s << Int << DISPTAB_SUFFIX;
 
     s << endl;                                          // dispatch table
@@ -492,10 +403,6 @@ void BoolConst::code_ref(ostream& s) const {
     s << BOOLCONST_PREFIX << val;
 }
 
-//
-// Emit code for a constant Bool.
-// You should fill in the code naming the dispatch table.
-//
 
 void BoolConst::code_def(ostream& s, int boolclasstag) {
     // Add -1 eye catcher
@@ -507,7 +414,7 @@ void BoolConst::code_def(ostream& s, int boolclasstag) {
       << WORD << (DEFAULT_OBJFIELDS + BOOL_SLOTS) << endl   // object size
       << WORD;
 
-    /***** Add dispatch information for class Bool ******/
+
     s << Bool << DISPTAB_SUFFIX;
 
     s << endl;                                            // dispatch table
@@ -520,18 +427,7 @@ int Environment::AddObstacle() {
     return AddVar(No_class);
 }
 
-//////////////////////////////////////////////////////////////////////////////
-//
-//  CgenClassTable methods
-//
-//////////////////////////////////////////////////////////////////////////////
 
-//***************************************************
-//
-//  Emit code to start the .data segment and to
-//  declare the global names.
-//
-//***************************************************
 
 void CgenClassTable::code_global_data() {
     Symbol main    = idtable.lookup_string(MAINNAME);
@@ -576,12 +472,6 @@ void CgenClassTable::code_global_data() {
 }
 
 
-//***************************************************
-//
-//  Emit code to start the .text segment and to
-//  declare the global names.
-//
-//***************************************************
 
 void CgenClassTable::code_global_text() {
     str << GLOBAL << HEAP_START << endl
@@ -622,18 +512,6 @@ void CgenClassTable::code_select_gc() {
 }
 
 
-//********************************************************
-//
-// Emit code to reserve space for and initialize all of
-// the constants.  Class names should have been added to
-// the string table (in the supplied code, is is done
-// during the construction of the inheritance graph), and
-// code for emitting string constants as a side effect adds
-// the string's length to the integer table.  The constants
-// are emmitted by running through the stringtable and inttable
-// and producing code for each entry.
-//
-//********************************************************
 
 void CgenClassTable::code_constants() {
     //
@@ -1046,18 +924,9 @@ CgenClassTable::CgenClassTable(Classes classes, ostream& s) : nds(NULL) , str(s)
 
 void CgenClassTable::install_basic_classes() {
 
-    // The tree package uses these globals to annotate the classes built below.
-    //curr_lineno  = 0;
+
     Symbol filename = stringtable.add_string("<basic class>");
 
-    //
-    // A few special class names are installed in the lookup table but not
-    // the class list.  Thus, these classes exist, but are not part of the
-    // inheritance hierarchy.
-    // No_class serves as the parent of Object and the other special classes.
-    // SELF_TYPE is the self class; it cannot be redefined or inherited.
-    // prim_slot is a class known to the code generator.
-    //
     addid(No_class,
           new CgenNode(class_(No_class, No_class, nil_Features(), filename),
                        Basic, this));
@@ -1068,15 +937,7 @@ void CgenClassTable::install_basic_classes() {
           new CgenNode(class_(prim_slot, No_class, nil_Features(), filename),
                        Basic, this));
 
-    //
-    // The Object class has no parent class. Its methods are
-    //        cool_abort() : Object    aborts the program
-    //        type_name() : Str        returns a string representation of class name
-    //        copy() : SELF_TYPE       returns a copy of the object
-    //
-    // There is no need for method bodies in the basic classes---these
-    // are already built in to the runtime system.
-    //
+
     install_class(
         new CgenNode(
             class_(Object,
@@ -1089,13 +950,7 @@ void CgenClassTable::install_basic_classes() {
                    filename),
             Basic, this));
 
-    //
-    // The IO class inherits from Object. Its methods are
-    //        out_string(Str) : SELF_TYPE          writes a string to the output
-    //        out_int(Int) : SELF_TYPE               "    an int    "  "     "
-    //        in_string() : Str                    reads a string from the input
-    //        in_int() : Int                         "   an int     "  "     "
-    //
+
     install_class(
         new CgenNode(
             class_(IO,
@@ -1112,10 +967,7 @@ void CgenClassTable::install_basic_classes() {
                    filename),
             Basic, this));
 
-    //
-    // The Int class has no methods and only a single attribute, the
-    // "val" for the integer.
-    //
+
     install_class(
         new CgenNode(
             class_(Int,
@@ -1124,22 +976,12 @@ void CgenClassTable::install_basic_classes() {
                    filename),
             Basic, this));
 
-    //
-    // Bool also has only the "val" slot.
-    //
     install_class(
         new CgenNode(
             class_(Bool, Object, single_Features(attr(val, prim_slot, no_expr())), filename),
             Basic, this));
 
-    //
-    // The class Str has a number of slots and operations:
-    //       val                                  ???
-    //       str_field                            the string itself
-    //       length() : Int                       length of the string
-    //       concat(arg: Str) : Str               string concatenation
-    //       substr(arg: Int, arg2: Int): Str     substring
-    //
+
     install_class(
         new CgenNode(
             class_(Str,
@@ -1165,11 +1007,7 @@ void CgenClassTable::install_basic_classes() {
 
 }
 
-// CgenClassTable::install_class
-// CgenClassTable::install_classes
-//
-// install_classes enters a list of classes in the symbol table.
-//
+
 void CgenClassTable::install_class(CgenNodeP nd) {
     Symbol name = nd->get_name();
 
@@ -1177,8 +1015,7 @@ void CgenClassTable::install_class(CgenNodeP nd) {
         return;
     }
 
-    // The class name is legal, so add it to the list of classes
-    // and the symbol table.
+
     nds = new List<CgenNode>(nd, nds);
     addid(name, nd);
 }
@@ -1189,21 +1026,14 @@ void CgenClassTable::install_classes(Classes cs) {
     }
 }
 
-//
-// CgenClassTable::build_inheritance_tree
-//
+
 void CgenClassTable::build_inheritance_tree() {
     for (List<CgenNode> *l = nds; l; l = l->tl()) {
         set_relations(l->hd());
     }
 }
 
-//
-// CgenClassTable::set_relations
-//
-// Takes a CgenNode and locates its, and its parent's, inheritance nodes
-// via the class table.  Parent and child pointers are added as appropriate.
-//
+
 void CgenClassTable::set_relations(CgenNodeP nd) {
     CgenNode* parent_node = probe(nd->get_parent());
     nd->set_parentnd(parent_node);
@@ -1284,11 +1114,7 @@ CgenNodeP CgenClassTable::root() {
 }
 
 
-///////////////////////////////////////////////////////////////////////
-//
-// CgenNode methods
-//
-///////////////////////////////////////////////////////////////////////
+
 
 CgenNode::CgenNode(Class_ nd, Basicness bstatus, CgenClassTableP ct) :
     class__class((const class__class&) *nd),
@@ -1299,16 +1125,6 @@ CgenNode::CgenNode(Class_ nd, Basicness bstatus, CgenClassTableP ct) :
 }
 
 
-//******************************************************************
-//
-//   Fill in the following methods to produce code for the
-//   appropriate expression.  You may add or remove parameters
-//   as you wish, but if you do, remember to change the parameters
-//   of the declarations in `cool-tree.h'  Sample code for
-//   constant integers, strings, and booleans are provided.
-//
-//*****************************************************************
-
 void assign_class::code(ostream& s, Environment env) {
     s << "\t# Assign. First eval the expr." << endl;
     expr->code(s, env);
@@ -1317,7 +1133,7 @@ void assign_class::code(ostream& s, Environment env) {
     int idx;
     bool found = false;
 
-    // Refactored control flow for lookup
+
     if ((idx = env.LookUpVar(name)) != -1) {
         s << "\t# It is a let variable." << endl;
         emit_store(ACC, idx + 1, SP, s);
@@ -1379,7 +1195,7 @@ void static_dispatch_class::code(ostream& s, Environment env) {
     emit_label_def(labelnum, s);
     ++labelnum;
 
-    // Direct string manipulation for address calculation
+
     std::string dispatch_table_label = type_name->get_string();
     dispatch_table_label += DISPTAB_SUFFIX;
     
@@ -1422,7 +1238,7 @@ void dispatch_class::code(ostream& s, Environment env) {
     emit_label_def(labelnum, s);
     ++labelnum;
 
-    // Get current class name;
+ 
     Symbol _class_name = env.m_class_node->name;
     if (expr->get_type() != SELF_TYPE) {
         _class_name = expr->get_type();
@@ -1446,10 +1262,7 @@ void dispatch_class::code(ostream& s, Environment env) {
 }
 
 void cond_class::code(ostream& s, Environment env) {
-    // REFACTORED: Logic Inversion
-    // Original: Eval Pred -> BEQZ False -> Then -> Jump End -> Label False -> Else -> Label End
-    // New: Eval Pred -> BNE True -> Else -> Jump End -> Label True -> Then -> Label End
-    
+
     int label_true = labelnum++;
     int label_finish = labelnum++;
 
